@@ -25,7 +25,7 @@ export const registerUser = async (req, res, next) => {
 
 export const localStrategy = async (email, password, done) => {
 	try {
-		let user = await User.findOne({ email }).select('-__v -createdAt -updatedAt -token')
+		let user = await User.findOne({ email }).select('-__v -createdAt -role -updatedAt -token')
 		if (!user) return done()
 		if (bcrypt.compareSync(password, user.password)) {
 			const { password, ...userNoPassword } = user.toJSON()
