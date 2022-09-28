@@ -3,7 +3,7 @@ const { Schema, model } = mongoose;
 
 const Profile = new Schema({
 	profile_image: { type: String, default: null },
-	webiste_url: { type: String, default: null },
+	website_url: { type: String, default: null },
 	bio: { type: String, default: null },
 	education: { type: String, default: null },
 	work: { type: String, default: null },

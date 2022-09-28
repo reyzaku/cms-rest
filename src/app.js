@@ -7,9 +7,10 @@ import session from 'express-session'
 import { default as connectMongoDbSession } from 'connect-mongodb-session'
 import { fileURLToPath } from 'url';
 import cors from 'cors'
-import authRoute from './app/auth/authRoute.js'
 import { config } from './app/config.js';
 import { decodeToken } from './middleware/decodeToken.js';
+import authRoute from './app/auth/authRoute.js'
+import profileRoute from './app/profile/profileRoute.js'
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -43,6 +44,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(decodeToken())
 
 app.use('/api/v1', authRoute)
+app.use('/api/v1', profileRoute)
 
 
 
