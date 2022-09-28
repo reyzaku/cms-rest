@@ -1,11 +1,12 @@
 import User from "../app/user/userModel.js";
 import jwt from 'jsonwebtoken'
 import { config } from "../app/config.js";
+import { getToken } from "../utils/getToken.js";
 
 function decodeToken() {
 	return async function (req, res, next) {
 		try {
-			const token = req.session.token
+			const token = getToken(req)
 			if (!token) return next()
 			req.user = jwt.verify(token, config.secretKey)
 			let user = await User.findOne({ token: { $in: [token] } })

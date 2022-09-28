@@ -1,23 +1,23 @@
 import User from "../user/userModel.js";
+import Profile from '../profile/profileModel.js'
 import passport from "passport";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { config } from "../config.js";
+import { getToken } from "../../utils/getToken.js";
+
 
 export const registerUser = async (req, res, next) => {
 	try {
 		const payload = req.body
-		const user = new User(payload)
-		await user.save()
-		return res.status(200).json({ msg: 'Register User Success', data: user })
-	} catch (err) {
-		if (err && err.name === 'ValidationError') {
-			return res.json({
-				error: 1,
-				message: err.message,
-				fields: err.errors
+		await User.create(payload)
+			.then(async (user) => {
+				res.status(200).json({ msg: 'Register User Success', data: user })
+				if (res.status(200)) {
+					await Profile.create({ user: user._id })
+				}
 			})
-		}
+	} catch (err) {
 		next(err)
 	}
 }
@@ -42,29 +42,27 @@ export const loginUser = async (req, res, next) => {
 	passport.authenticate('local', async function (err, user) {
 		if (err) return next(err)
 		if (!user) return res.json({ error: 1, message: 'email or password incorect' })
-
 		let signed = jwt.sign(user, config.secretKey, {
-			expiresIn: '1D'
+			expiresIn: '1H'
 		})
 
 		await User.findByIdAndUpdate(user._id, { $push: { token: signed } })
 		req.session.userId = user._id
-		req.session.token = signed
 		res.json({
 			message: 'Login Successfully',
 			user,
-			token: signed ? 'Connected Token Success' : 'Failed Connect Token'
+			token: signed
 		})
 	})(req, res, next)
 }
 
 export const logoutUser = async (req, res, next) => {
 	try {
-		const token = req.session.token
+		const token = getToken(req)
 		let user = await User.findOneAndUpdate({ token: { $in: [token] } }, { $pull: { token: token } }, { useFindAndModify: false })
 		if (!user) return res.status(400).json({ msg: 'User not found' })
 		req.session.destroy((err) => {
-			if(err) return next(err)
+			if (err) return next(err)
 			return res.status(200).json({ msg: 'Success Logout' })
 		})
 	} catch (err) {
@@ -88,6 +86,7 @@ export const me = async (req, res,) => {
 	}
 	res.json(req.user)
 }
+
 
 
 
