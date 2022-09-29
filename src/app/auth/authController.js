@@ -43,7 +43,7 @@ export const loginUser = async (req, res, next) => {
 		if (err) return next(err)
 		if (!user) return res.json({ error: 1, message: 'email or password incorect' })
 		let signed = jwt.sign(user, config.secretKey, {
-			expiresIn: '1H'
+			expiresIn: '3H'
 		})
 
 		await User.findByIdAndUpdate(user._id, { $push: { token: signed } })
@@ -79,13 +79,15 @@ export const logoutUser = async (req, res, next) => {
 
 export const me = async (req, res,) => {
 	if (!req.user) {
-		return res.status(500).json({
+		return res.status(401).json({
 			error: 2,
 			msg: "Please login your account"
 		})
 	}
-	res.json(req.user)
+	res.status(200).json(req.user)
 }
+
+
 
 
 

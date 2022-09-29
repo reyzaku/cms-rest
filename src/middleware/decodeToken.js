@@ -8,10 +8,14 @@ function decodeToken() {
 		try {
 			const token = getToken(req)
 			if (!token) return next()
-			req.user = jwt.verify(token, config.secretKey)
+			try {
+				req.user = jwt.verify(token, config.secretKey)
+			} catch (error) {
+				return next(res.status(401).json({ message: 'Token Expired, Please login again your account!', error: error }))
+			}
 			let user = await User.findOne({ token: { $in: [token] } })
 			if (!user) {
-				res.json({
+				res.status(401).json({
 					error: 3,
 					message: 'Token expired, Please login your account '
 				})

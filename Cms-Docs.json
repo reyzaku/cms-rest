@@ -1,0 +1,281 @@
+{
+	 "openapi":"3.0.2",
+	 "info": {
+		"title":"CMS",
+		"description": "Restfull API CMS",
+		"version":"1.0"
+	 },
+	 "servers": [
+		{
+			"url": "http://localhost:5000/api/v1"
+		}
+	 ],
+	 "paths": {
+		"/auth/login": {
+			"post": {
+				"tags": ["Auth"],
+				"summary": "Login User",
+				"description": "Login users by token",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string",
+										"required":  true
+									},
+									"password": {
+										"type": "string",
+										"required": true
+									}
+								}
+							},
+							"examples":{
+								"javascript": {
+									"description": "Example login user",
+									"value": {
+										"email": "resi@gmail.com",
+										"password": "wakwak123"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Login successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"email": {
+											"type": "string"
+										},
+										"password": {
+											"type": "string"
+										}
+
+									}
+								},
+								"examples": {
+									"javascript": {
+										"value": {
+											"email": "resi@gmail.com",
+											"password": "wakwak123"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/register":{
+			"post": {
+				"tags": ["Auth"],
+				"summary": "Register User",
+				"parameters": [
+					{
+						"name": "include done",
+						"required": false,
+						"in": "query"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"username": {
+										"type": "string",
+										"minLength": 6,
+										"required": true
+									},
+									"firstname": {
+										"type": "string",
+										"minLength": 3,
+										"required": true
+									},
+									"lastname": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string",
+										"format": "unique",
+										"required": true
+									},
+									"password": {
+										"type": "string",
+										"required": true,
+										"minLength": 8
+									},
+									"role": {
+										"type": "string",
+										"default" : "user",
+										"required": true
+									},
+									"token": {
+										"type": "array",
+										"minItems": 1,
+										"items" : {
+											"type": "string",
+											"minLength": 1
+										}
+									}
+								}
+							},
+							"examples": {
+								"javascript": {
+									"description": "User register",
+									"value":{
+										"username": "wakwak",
+										"firstname": "resi",
+										"lastname": "wicaksono",
+										"email": "resi@gmail.com",
+										"password": "wakwak123"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Create User Successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"username": {
+											"type": "string"
+										},
+										"firstname": {
+											"type": "string"
+										},
+										"lastname": {
+											"type": "string"
+										},
+										"email": {
+											"type": "string"
+										},
+										"password": {
+											"type": "string"
+										}
+									}
+								},
+								"examples": {
+									"javascript": {
+										"value": {
+											"username": "wakwak",
+											"firstname": "resi",
+											"lastname": "wicaksono",
+											"email": "resi@gmail.com",
+											"password": "wakwak123"
+										}
+									}
+								}
+							}
+						}	
+					}
+				}
+			}
+		},
+		"/me": {
+			"get": {
+				"tags": ["Auth"],
+				"summary": "Check User Login",
+				"parameters": [
+					{
+					"name" : "User token JWT",
+					"in": "header",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+				}],
+				"responses": {
+					"200" : {
+						"description": "Get Data User",
+						"content": {
+							"application/json":{
+								"schema": {
+									"type": "object",
+									"properties": {
+										"id": {
+											"type": "string"
+										},
+										"username": {
+											"type": "string"
+										},
+										"firstname":{
+											"type": "string"
+										},
+										"lastname":{
+											"type": "string"
+										},
+										"email": {
+											"type": "string"
+										}
+									}
+								},
+								"examples": {
+									"success": {
+										"value": {
+											"id": "ksd923k29d292o2",
+											"username": "wakwak",
+											"firstname": "Resi",
+											"lastname": "Wicaksono",
+											"email": "resi@gmail.com"
+										}
+									}
+								}
+							}
+						}
+					}
+					
+				}
+			}
+		},
+		"/auth/logout":{
+			"delete": {
+				"tags": ["Auth"],
+				"summary": "Logout User",			
+				"parameters": [
+					{
+					"name" : "User token JWT",
+					"in": "header",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "Success logout",
+						"content": {
+							"application/json": {
+								"schema":{
+									"type": "object",
+									"properties": {
+										"succcess": {
+											"type": "boolean"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	 }
+  }

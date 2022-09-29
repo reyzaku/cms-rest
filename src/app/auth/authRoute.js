@@ -6,10 +6,10 @@ const router = express.Router()
 loginStrategy.Strategy
 
 passport.use(new loginStrategy({ usernameField: 'email' }, localStrategy))
-router.post('/register', registerUser)
-router.post('/login', loginUser)
+router.post('/auth/register', registerUser)
+router.post('/auth/login', loginUser)
 router.get('/me', me)
-router.delete('/logout', logoutUser)
+router.delete('/auth/logout', logoutUser)
 
 
 export default router
