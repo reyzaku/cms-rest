@@ -16,27 +16,28 @@ export const createArticle = async (req, res, next) => {
 				tags.map((tag) => {
 					if (tag.name !== item) {
 						Tag.create({ name: item })
+							.then((newTag) => {
+								payload = { ...payload, tags: [newTag._id] }
+							})
 					}
 				})
 			})
-			let newTag = await Tag.find({ name: payload.tags })
-			payload = { ...payload, tags: newTag.map(tag => tag._id) }
-
+			// payload = { ...payload, tags: tags.map(tag => tag._id) }
 		}
+		// console.log(payload);
 
-		console.log(payload);
 
 		// Edit Payload image Name
 		payload = { ...payload, cover_image: `images/cover_images/${req.file.filename}` }
 
-		await Article.create(payload)
-			.then(async (article) => {
-				await Tag.updateMany({ _id: { $in: payload.tags } }, { $push: { article: article._id } });
-				return res.status(200).json({
-					message: "Success Create Article",
-					data: article
-				})
-			})
+		// await Article.create(payload)
+		// 	.then(async (article) => {
+		// 		await Tag.updateMany({ _id: { $in: payload.tags } }, { $push: { article: article._id } });
+		// 		return res.status(200).json({
+		// 			message: "Success Create Article",
+		// 			data: article
+		// 		})
+		// 	})
 
 	} catch (error) {
 		return next(error)
