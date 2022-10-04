@@ -12,33 +12,40 @@ export const createArticle = async (req, res, next) => {
 		// Edit payload tags
 		if (payload.tags && payload.tags.length > 0) {
 			let tags = await Tag.find({ name: payload.tags })
-			payload.tags.map(item => {
-				tags.map((tag) => {
-					if (tag.name !== item) {
-						Tag.create({ name: item })
-							.then((newTag) => {
-								payload = { ...payload, tags: [newTag._id] }
-							})
-					}
+			if (tags.length < 1) {
+				payload.tags.map(async (tag) => {
+					await Tag.create({name: tag})
+				})
+			} else {
+				payload.tags.map(item => {
+					tags.map((tag) => {
+						if (tag.name !== item) {
+							Tag.create({ name: item })
+						}
+					})
+				})
+			}
+
+
+		}
+
+		let tags = await Tag.find({ name: payload.tags });
+			payload = { ...payload, tags: tags.map(tag => tag._id) }
+
+			// Edit Payload image Name
+			payload = { ...payload, cover_image: `images/cover_images/${req.file.filename}` }
+
+
+		setTimeout(async () => {
+			await Article.create(payload)
+			.then(async (article) => {
+				await Tag.updateMany({ _id: { $in: payload.tags } }, { $push: { article: article._id } });
+				return res.status(200).json({
+					message: "Success Create Article",
+					data: article
 				})
 			})
-			// payload = { ...payload, tags: tags.map(tag => tag._id) }
-		}
-		// console.log(payload);
-
-
-		// Edit Payload image Name
-		payload = { ...payload, cover_image: `images/cover_images/${req.file.filename}` }
-
-		// await Article.create(payload)
-		// 	.then(async (article) => {
-		// 		await Tag.updateMany({ _id: { $in: payload.tags } }, { $push: { article: article._id } });
-		// 		return res.status(200).json({
-		// 			message: "Success Create Article",
-		// 			data: article
-		// 		})
-		// 	})
-
+		},)
 	} catch (error) {
 		return next(error)
 	}
