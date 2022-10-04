@@ -27,10 +27,7 @@ export const editProfile = async (req, res, next) => {
 }
 
 export const getProfile = async (req, res, next) => {
-	try {
-		const profile = await Profile.findOne({ user: req.user._id }).populate('user', ['username', 'email', 'firstname', 'lastname'])
-		return res.status(200).json({ message: `Get Profile ${(req.user.username)}`, data: profile })
-	} catch (error) {
-		next(error)
-	}
+	if(!req.user) return res.status(401).json({message: 'Token null, Please login again!'})
+	const profile = await Profile.findOne({ user: req.user._id }).populate('user', ['username', 'email', 'firstname', 'lastname'])
+	return res.status(200).json({ message: `Get Profile ${(req.user.username)}`, data: profile })
 }

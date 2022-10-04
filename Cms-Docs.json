@@ -10,6 +10,62 @@
 			"url": "http://localhost:5000/api/v1"
 		}
 	 ],
+	 "components": {
+		"responses": {
+			"profile": {
+				"description": "Profile Response",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"properties": {
+								"_id": {
+									"type": "string"
+								},
+								"profile_image": {
+									"type": "string"
+								},
+								"website_url": {
+									"type": "string"
+								},
+								"bio": {
+									"type": "string"
+								},
+								"education": {
+									"type": "string"
+								},
+								"work": {
+									"type": "string"
+								},
+								"skills": {
+									"type": "array",
+									"items" : {
+										"type": "string"
+									}
+								},
+								"current_learn" :{
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"parameters": {
+			"get_token_headers": {
+				"name" : "User token JWT",
+					"in": "header",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+			}
+		}
+	 },
 	 "paths": {
 		"/auth/login": {
 			"post": {
@@ -50,23 +106,15 @@
 						"description": "Login successfully",
 						"content": {
 							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"email": {
-											"type": "string"
-										},
-										"password": {
-											"type": "string"
-										}
-
-									}
-								},
 								"examples": {
 									"javascript": {
 										"value": {
+											"_id": "6335ebbdf38d1e381fedb01b",
+											"username": "wakwak",
+											"firstname": "Resi",
+											"lastname": "Wicaksono",
 											"email": "resi@gmail.com",
-											"password": "wakwak123"
+											"token": "nsnc29u2bd28b8bd28b2"
 										}
 									}
 								}
@@ -107,8 +155,8 @@
 									"lastname": {
 										"type": "string"
 									},
-									"email": {
-										"type": "string",
+									"_id": {
+									"type": "string",
 										"format": "unique",
 										"required": true
 									},
@@ -149,37 +197,20 @@
 				},
 				"responses": {
 					"200": {
-						"description": "Create User Successfully",
+						"description": "Register User Success",
 						"content": {
 							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"username": {
-											"type": "string"
-										},
-										"firstname": {
-											"type": "string"
-										},
-										"lastname": {
-											"type": "string"
-										},
-										"email": {
-											"type": "string"
-										},
-										"password": {
-											"type": "string"
-										}
-									}
-								},
 								"examples": {
 									"javascript": {
 										"value": {
+											"_id": "6336217bceb13ab11fbd96ca",
 											"username": "wakwak",
 											"firstname": "resi",
 											"lastname": "wicaksono",
 											"email": "resi@gmail.com",
-											"password": "wakwak123"
+											"password": "$2b$10$BFQHt59o8HEJBxgGt64Ga.A9t4nFxeg.fvoBQKKG9vTiaYBb1ATBi",
+											"role": "user",
+											"token": "[]"
 										}
 									}
 								}
@@ -194,39 +225,15 @@
 				"tags": ["Auth"],
 				"summary": "Check User Login",
 				"parameters": [
-					{
-					"name" : "User token JWT",
-					"in": "header",
-					"required": true,
-					"schema": {
-						"type": "string"
-					}
-				}],
+						{
+							"$ref": "#/components/parameters/get_token_headers"
+						}
+				],
 				"responses": {
 					"200" : {
 						"description": "Get Data User",
 						"content": {
 							"application/json":{
-								"schema": {
-									"type": "object",
-									"properties": {
-										"id": {
-											"type": "string"
-										},
-										"username": {
-											"type": "string"
-										},
-										"firstname":{
-											"type": "string"
-										},
-										"lastname":{
-											"type": "string"
-										},
-										"email": {
-											"type": "string"
-										}
-									}
-								},
 								"examples": {
 									"success": {
 										"value": {
@@ -251,12 +258,7 @@
 				"summary": "Logout User",			
 				"parameters": [
 					{
-					"name" : "User token JWT",
-					"in": "header",
-					"required": true,
-					"schema": {
-						"type": "string"
-					}
+						"$ref": "#/components/parameters/get_token_headers"
 				}],
 				"responses": {
 					"200": {
@@ -273,6 +275,108 @@
 								}
 							}
 						}
+					}
+				}
+			}
+		},
+		"/profile": {
+			"get": {
+				"tags": ["Profile"],
+				"description": "Get Profile User",
+				"summary": "Get Profile ",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/get_token_headers"
+					}
+				],
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/profile"
+					}
+				}
+			},
+			"put": {
+				"tags": ["Profile"],
+				"description": "Edit Profile User",
+				"summary": "Edit Profile",
+				"parameters": [
+					{
+						"$ref" : "#/components/parameters/get_token_headers"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"website_url": {
+										"type": "string"
+									},
+									"bio": {
+										"type": "string"
+									},
+									"profile_image": {
+										"type": "string"
+									},
+									"education": {
+										"type": "string"
+									},
+									"work": {
+										"type": "string"
+									},
+									"skills": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"current_learn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"examples": {
+								"javascript" : {
+									"description": "Multipart form data",
+									"value": {
+										"website_url": "www.resi.com",
+										"bio": "Fuck",
+										"profile_image": "image/profile_image/gambar.png",
+										"education": "Universitas Pamulang",
+										"work": "Backend Dev At Gojek",
+										"skills": ["Node js", "React Js"],
+										"current_learn": ["Docker", "Next Js"]
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/profile"
+					}
+				}
+			}
+		},
+		"/articles": {
+			"get": {
+				"tags": ["Articles"],
+				"summary": "Get All Articles",
+				"description": "Get All Articles  ",
+				"parameters": [
+					{
+						"$ref" : "#/components/parameters/get_token_headers"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
 					}
 				}
 			}

@@ -8,12 +8,19 @@ function decodeToken() {
 		try {
 			const token = getToken(req)
 			if (!token) return next()
+			let user = await User.findOne({ token: { $in: [token] } })
 			try {
 				req.user = jwt.verify(token, config.secretKey)
 			} catch (error) {
-				return next(res.status(401).json({ message: 'Token Expired, Please login again your account!', error: error }))
+				user?.token.map((token) => {
+					jwt.verify(token, config.secretKey, async (err, user) => {
+						if (err?.message === 'jwt expired') {
+							await User.findOneAndUpdate({ token: { $in: [token] } }, { $pull: { token: token } }, { useFindAndModify: false })
+						}
+					})
+				})
 			}
-			let user = await User.findOne({ token: { $in: [token] } })
+
 			if (!user) {
 				res.status(401).json({
 					error: 3,
@@ -27,7 +34,7 @@ function decodeToken() {
 					message: err.message
 				})
 			}
-			next(err)
+			next()
 		}
 		return next()
 	}

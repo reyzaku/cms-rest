@@ -7,7 +7,9 @@ loginStrategy.Strategy
 
 passport.use(new loginStrategy({ usernameField: 'email' }, localStrategy))
 router.post('/auth/register', registerUser)
-router.post('/auth/login', loginUser)
+router.post('/auth/login',
+	loginUser,
+)
 router.get('/me', me)
 router.delete('/auth/logout', logoutUser)
 
