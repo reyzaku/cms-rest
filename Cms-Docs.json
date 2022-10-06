@@ -1,0 +1,385 @@
+{
+	 "openapi":"3.0.2",
+	 "info": {
+		"title":"CMS",
+		"description": "Restfull API CMS",
+		"version":"1.0"
+	 },
+	 "servers": [
+		{
+			"url": "http://localhost:5000/api/v1"
+		}
+	 ],
+	 "components": {
+		"responses": {
+			"profile": {
+				"description": "Profile Response",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"properties": {
+								"_id": {
+									"type": "string"
+								},
+								"profile_image": {
+									"type": "string"
+								},
+								"website_url": {
+									"type": "string"
+								},
+								"bio": {
+									"type": "string"
+								},
+								"education": {
+									"type": "string"
+								},
+								"work": {
+									"type": "string"
+								},
+								"skills": {
+									"type": "array",
+									"items" : {
+										"type": "string"
+									}
+								},
+								"current_learn" :{
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"parameters": {
+			"get_token_headers": {
+				"name" : "User token JWT",
+					"in": "header",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+			}
+		}
+	 },
+	 "paths": {
+		"/auth/login": {
+			"post": {
+				"tags": ["Auth"],
+				"summary": "Login User",
+				"description": "Login users by token",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string",
+										"required":  true
+									},
+									"password": {
+										"type": "string",
+										"required": true
+									}
+								}
+							},
+							"examples":{
+								"javascript": {
+									"description": "Example login user",
+									"value": {
+										"email": "resi@gmail.com",
+										"password": "wakwak123"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Login successfully",
+						"content": {
+							"application/json": {
+								"examples": {
+									"javascript": {
+										"value": {
+											"_id": "6335ebbdf38d1e381fedb01b",
+											"username": "wakwak",
+											"firstname": "Resi",
+											"lastname": "Wicaksono",
+											"email": "resi@gmail.com",
+											"token": "nsnc29u2bd28b8bd28b2"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/register":{
+			"post": {
+				"tags": ["Auth"],
+				"summary": "Register User",
+				"parameters": [
+					{
+						"name": "include done",
+						"required": false,
+						"in": "query"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"username": {
+										"type": "string",
+										"minLength": 6,
+										"required": true
+									},
+									"firstname": {
+										"type": "string",
+										"minLength": 3,
+										"required": true
+									},
+									"lastname": {
+										"type": "string"
+									},
+									"_id": {
+									"type": "string",
+										"format": "unique",
+										"required": true
+									},
+									"password": {
+										"type": "string",
+										"required": true,
+										"minLength": 8
+									},
+									"role": {
+										"type": "string",
+										"default" : "user",
+										"required": true
+									},
+									"token": {
+										"type": "array",
+										"minItems": 1,
+										"items" : {
+											"type": "string",
+											"minLength": 1
+										}
+									}
+								}
+							},
+							"examples": {
+								"javascript": {
+									"description": "User register",
+									"value":{
+										"username": "wakwak",
+										"firstname": "resi",
+										"lastname": "wicaksono",
+										"email": "resi@gmail.com",
+										"password": "wakwak123"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Register User Success",
+						"content": {
+							"application/json": {
+								"examples": {
+									"javascript": {
+										"value": {
+											"_id": "6336217bceb13ab11fbd96ca",
+											"username": "wakwak",
+											"firstname": "resi",
+											"lastname": "wicaksono",
+											"email": "resi@gmail.com",
+											"password": "$2b$10$BFQHt59o8HEJBxgGt64Ga.A9t4nFxeg.fvoBQKKG9vTiaYBb1ATBi",
+											"role": "user",
+											"token": "[]"
+										}
+									}
+								}
+							}
+						}	
+					}
+				}
+			}
+		},
+		"/me": {
+			"get": {
+				"tags": ["Auth"],
+				"summary": "Check User Login",
+				"parameters": [
+						{
+							"$ref": "#/components/parameters/get_token_headers"
+						}
+				],
+				"responses": {
+					"200" : {
+						"description": "Get Data User",
+						"content": {
+							"application/json":{
+								"examples": {
+									"success": {
+										"value": {
+											"id": "ksd923k29d292o2",
+											"username": "wakwak",
+											"firstname": "Resi",
+											"lastname": "Wicaksono",
+											"email": "resi@gmail.com"
+										}
+									}
+								}
+							}
+						}
+					}
+					
+				}
+			}
+		},
+		"/auth/logout":{
+			"delete": {
+				"tags": ["Auth"],
+				"summary": "Logout User",			
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/get_token_headers"
+				}],
+				"responses": {
+					"200": {
+						"description": "Success logout",
+						"content": {
+							"application/json": {
+								"schema":{
+									"type": "object",
+									"properties": {
+										"succcess": {
+											"type": "boolean"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/profile": {
+			"get": {
+				"tags": ["Profile"],
+				"description": "Get Profile User",
+				"summary": "Get Profile ",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/get_token_headers"
+					}
+				],
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/profile"
+					}
+				}
+			},
+			"put": {
+				"tags": ["Profile"],
+				"description": "Edit Profile User",
+				"summary": "Edit Profile",
+				"parameters": [
+					{
+						"$ref" : "#/components/parameters/get_token_headers"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"website_url": {
+										"type": "string"
+									},
+									"bio": {
+										"type": "string"
+									},
+									"profile_image": {
+										"type": "string"
+									},
+									"education": {
+										"type": "string"
+									},
+									"work": {
+										"type": "string"
+									},
+									"skills": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"current_learn": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"examples": {
+								"javascript" : {
+									"description": "Multipart form data",
+									"value": {
+										"website_url": "www.resi.com",
+										"bio": "Fuck",
+										"profile_image": "image/profile_image/gambar.png",
+										"education": "Universitas Pamulang",
+										"work": "Backend Dev At Gojek",
+										"skills": ["Node js", "React Js"],
+										"current_learn": ["Docker", "Next Js"]
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/profile"
+					}
+				}
+			}
+		},
+		"/articles": {
+			"get": {
+				"tags": ["Articles"],
+				"summary": "Get All Articles",
+				"description": "Get All Articles  ",
+				"parameters": [
+					{
+						"$ref" : "#/components/parameters/get_token_headers"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK"
+					}
+				}
+			}
+		}
+	 }
+  }
