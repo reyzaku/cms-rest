@@ -7,11 +7,7 @@ export const editProfile = async (req, res, next) => {
 		if (req.file) {
 			let profile = await Profile.findOne({ user: req.user._id })
 			if (!profile) return next("User not found")
-			const imagePath = `public/${profile.profile_image}`
-			if (fs.existsSync(imagePath)) {
-				fs.unlinkSync(imagePath)
-			}
-			await Profile.findOneAndUpdate({ user: req.user._id }, { ...payload, profile_image: `images/profile_images/${req.file.filename}` })
+			await Profile.findOneAndUpdate({ user: req.user._id }, { ...payload, })
 			profile = await Profile.findOne({ user: req.user._id })
 			return res.status(200).json({ message: 'Edit Success', data: profile })
 		} else {
@@ -21,8 +17,15 @@ export const editProfile = async (req, res, next) => {
 			}).populate('user', ['username'])
 			return res.status(200).json({ message: 'Edit Success', data: profile })
 		}
-	} catch (error) {
-		next(error)
+	} catch (err) {
+		if (err && err.name === 'ValidaitonError') {
+			return res.json({
+				error: 1,
+				message: err.message,
+				fields: err.errors
+			})
+		}
+		next(err)
 	}
 }
 
