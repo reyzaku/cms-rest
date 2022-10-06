@@ -15,6 +15,7 @@ const Article = new Schema({
 	title: {
 		type: String,
 		required: [true, 'Title is required'],
+		index: true
 	},
 	cover_image: {
 		type: String
@@ -22,9 +23,7 @@ const Article = new Schema({
 	element: [
 		{
 			_id: {
-				type: Schema.Types.ObjectId,
-				index: true,
-				auto: true
+				type: String,
 			},
 			type: {
 				type: String,
