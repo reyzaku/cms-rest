@@ -41,7 +41,7 @@ export const localStrategy = async (email, password, done) => {
 export const loginUser = async (req, res, next) => {
 	passport.authenticate('local', async function (err, user) {
 		if (err) return next(err)
-		if (!user) return res.json({ error: 1, message: 'email or password incorect' })
+		if (!user) return res.status(400).json({ error: 1, message: 'email or password incorect' })
 		let signed = jwt.sign(user, config.secretKey, {
 			expiresIn: '3d'
 		})

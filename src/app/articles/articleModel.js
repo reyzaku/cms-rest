@@ -14,26 +14,27 @@ const Article = new Schema({
 	},
 	title: {
 		type: String,
-		required: ['true', 'Title is required'],
+		required: [true, 'Title is required'],
 	},
 	cover_image: {
 		type: String
 	},
-	element: [{
-		_id: {
-			type: Schema.Types.ObjectId,
-			index: true,
-			auto: true
-		},
-		type: {
-			type: String,
-			required: [true, "Type is required"],
-		},
-		content: {
-			type: String,
-			required: [true, "Content is required"]
-		}
-	}]
+	element: [
+		{
+			_id: {
+				type: Schema.Types.ObjectId,
+				index: true,
+				auto: true
+			},
+			type: {
+				type: String,
+				required: [true, "Type is required"],
+			},
+			content: {
+				type: String,
+				required: [true, "Content is required"]
+			}
+		}]
 }, { timestamps: true })
 
 export default model('Article', Article)
