@@ -43,7 +43,7 @@ export const loginUser = async (req, res, next) => {
 		if (err) return next(err)
 		if (!user) return res.json({ error: 1, message: 'email or password incorect' })
 		let signed = jwt.sign(user, config.secretKey, {
-			expiresIn: '3H'
+			expiresIn: '3d'
 		})
 
 		await User.findByIdAndUpdate(user._id, { $push: { token: signed } })

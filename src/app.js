@@ -12,7 +12,8 @@ import { decodeToken } from './middleware/decodeToken.js';
 import authRoute from './app/auth/authRoute.js'
 import profileRoute from './app/profile/profileRoute.js'
 import userRoute from './app/user/userRoute.js'
-
+import articleRoute from './app/articles/articleRoute.js'
+import tagRoute from './app/tags/router.js'
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,6 +48,8 @@ app.use(decodeToken())
 app.use('/api/v1', authRoute)
 app.use('/api/v1', profileRoute)
 app.use('/api/v1', userRoute)
+app.use('/api/v1', articleRoute)
+app.use('/api/v1', tagRoute)
 
 
 
