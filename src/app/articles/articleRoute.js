@@ -13,7 +13,7 @@ router.get('/articles', getAllArticle)
 router.get('/articles/:email', getArticle)
 
 // get one article by id
-router.get('/articles/:_id', getOneArticle)
+router.get('/article/:_id', getOneArticle)
 
 // delete one article by id
 router.delete('/articles/:_id', destroyArticle)
