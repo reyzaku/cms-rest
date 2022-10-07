@@ -1,10 +1,10 @@
 import Tag from "../tags/Tag.js";
 import Article from "./articleModel.js";
-import fs from 'fs'
 
 // Create a new Article
 export const createArticle = async (req, res, next) => {
 	try {
+		if (!req.user) return res.status(401).json({ message: "Your are not logged in" })
 		let payload = req.body
 
 		// Edit payload user 
@@ -13,26 +13,22 @@ export const createArticle = async (req, res, next) => {
 		// Edit payload tags and create tag if not available
 		if (payload.tags && payload.tags.length > 0) {
 			let tags = await Tag.find({ name: payload.tags })
-			if (tags.length < 1) {
-				payload.tags.map(async (tag) => {
-					await Tag.create({ name: tag })
-				})
-			} else {
-				payload.tags.map(item => {
-					tags.map((tag) => {
-						if (tag.name !== item) {
-							Tag.create({ name: item })
-						}
-					})
-				})
+			let newTag = []
+
+			tags.map(tag => {
+				newTag.push(tag.name)
+			})
+
+			for (let i = 0; i < payload.tags.length; i++) {
+				if (!newTag.includes(payload.tags[i])) {
+					await Tag.create({ name: payload.tags[i] })
+				}
 			}
 		}
 
 		let tags = await Tag.find({ name: payload.tags });
 		payload = { ...payload, tags: tags.map(tag => tag._id) }
 
-
-		setTimeout(async () => {
 			await Article.create(payload)
 				.then(async (article) => {
 					await Tag.updateMany({ _id: { $in: payload.tags } }, { $push: { article: article._id } });
@@ -49,7 +45,6 @@ export const createArticle = async (req, res, next) => {
 						})
 					}
 				})
-		},)
 	} catch (err) {
 		next(err)
 	}
@@ -63,8 +58,8 @@ export const getAllArticle = async (req, res, next) => {
 		let criteria = {}
 		let countArticle = await Article.find().countDocuments()
 
-		if(skip.length){ 
-			criteria = {...criteria, skip}
+		if (skip.length) {
+			criteria = { ...criteria, skip }
 		}
 
 		if (q.length) {
@@ -106,7 +101,7 @@ export const getOneArticle = async (req, res) => {
 		const { _id } = req.params
 		const article = await Article.findOne({ _id })
 			.populate('tags', ['_id', 'name'])
-			.populate('user', ['_id', 'username', 'firstname', 'lastname', 'email'])
+			.populate('user', ['username', 'firstname', 'lastname', 'email'])
 		return res.status(200).json(article)
 	} catch (error) {
 		if (error?.messageFormat === undefined) {
