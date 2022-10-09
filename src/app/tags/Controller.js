@@ -1,5 +1,6 @@
 import Tag from "./Tag.js";
 
+// create tag
 export const createTag = async (req, res, next) => {
 	try {
 		const payload = req.body
@@ -10,6 +11,7 @@ export const createTag = async (req, res, next) => {
 	}
 }
 
+// get all tag
 export const getTag = async (req, res, next) => {
 	try {
 		const tag = await Tag.find().populate('article', ["_id"])
@@ -19,6 +21,7 @@ export const getTag = async (req, res, next) => {
 	}
 }
 
+// edit tag by id
 export const editTag = async (req, res, next) => {
 	try {
 		const { _id } = req.params
@@ -31,6 +34,7 @@ export const editTag = async (req, res, next) => {
 	}
 }
 
+// delete tag
 export const deleteTag = async (req, res, next) => {
 	try {
 		const { _id } = req.params

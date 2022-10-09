@@ -1,6 +1,6 @@
 import Profile from './model.js'
-import fs from 'fs'
 
+// Edit Profile By User login
 export const editProfile = async (req, res, next) => {
 	if(!req.user) return res.status(401).json({message: 'Please login your account!'})
 	try {
@@ -30,6 +30,7 @@ export const editProfile = async (req, res, next) => {
 	}
 }
 
+// Get profile by user login
 export const getProfile = async (req, res, next) => {
 	if(!req.user) return res.status(401).json({message: 'Token null, Please login again!'})
 	const profile = await Profile.findOne({ user: req.user._id }).populate('user', ['username', 'email', 'firstname', 'lastname'])

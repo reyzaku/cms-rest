@@ -2,6 +2,7 @@ import User from './model.js'
 import Profile from '../profile/model.js'
 import fs from 'fs'
 
+// Get all user if role admin
 export const getAllUser = async (req, res, next) => {
 	try {
 		const user = await Profile.find().populate('user', ['-password', '-token', '-__v'])
@@ -11,6 +12,7 @@ export const getAllUser = async (req, res, next) => {
 	}
 }
 
+// delete user if role admin
 export const deleteUser = async (req, res, next) => {
 	try {
 		const { id } = req.params

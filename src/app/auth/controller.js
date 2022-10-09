@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { config } from "../config.js";
 
-
+// Register User
 export const registerUser = async (req, res, next) => {
 	try {
 		const payload = req.body
@@ -21,7 +21,7 @@ export const registerUser = async (req, res, next) => {
 	}
 }
 
-
+// Local strategy-local paspport.js
 export const localStrategy = async (email, password, done) => {
 	try {
 		let user = await User.findOne({ email }).select('-__v -createdAt -role -updatedAt -token')
@@ -37,6 +37,7 @@ export const localStrategy = async (email, password, done) => {
 	done();
 }
 
+// Login User
 export const loginUser = async (req, res, next) => {
 	passport.authenticate('local', async function (err, user) {
 		if (err) return next(err)
@@ -44,7 +45,7 @@ export const loginUser = async (req, res, next) => {
 		let signed = jwt.sign(user, config.secretKey, {
 			expiresIn: '3h'
 		})
-
+		//Push token and set token to session
 		await User.findByIdAndUpdate(user._id, { $push: { token: signed } })
 		req.session.token = signed
 		res.json({
@@ -54,6 +55,7 @@ export const loginUser = async (req, res, next) => {
 	})(req, res, next)
 }
 
+// Logout User
 export const logoutUser = async (req, res, next) => {
 	try {
 		const token = req.session.token
@@ -75,6 +77,7 @@ export const logoutUser = async (req, res, next) => {
 	}
 }
 
+// Check user login
 export const me = async (req, res,) => {
 	if (!req.user) {
 		return res.status(401).json({

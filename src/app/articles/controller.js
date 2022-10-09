@@ -29,22 +29,22 @@ export const createArticle = async (req, res, next) => {
 		let tags = await Tag.find({ name: payload.tags });
 		payload = { ...payload, tags: tags.map(tag => tag._id) }
 
-			await Article.create(payload)
-				.then(async (article) => {
-					await Tag.updateMany({ _id: { $in: payload.tags } }, { $push: { article: article._id } });
-					return res.status(200).json({
-						message: "Success Create Article",
-						data: article
-					})
-				}).catch(err => {
-					if (err && err.name === 'ValidationError') {
-						return res.json({
-							error: 1,
-							message: err.message,
-							fields: err.errors
-						})
-					}
+		await Article.create(payload)
+			.then(async (article) => {
+				await Tag.updateMany({ _id: { $in: payload.tags } }, { $push: { article: article._id } });
+				return res.status(200).json({
+					message: "Success Create Article",
+					data: article
 				})
+			}).catch(err => {
+				if (err && err.name === 'ValidationError') {
+					return res.json({
+						error: 1,
+						message: err.message,
+						fields: err.errors
+					})
+				}
+			})
 	} catch (err) {
 		next(err)
 	}
@@ -74,7 +74,11 @@ export const getAllArticle = async (req, res, next) => {
 		}
 
 
-		const article = await Article.find(criteria).limit(parseInt(limit)).skip(parseInt(skip)).populate('tags', ["id", "name"])
+		const article = await Article.find(criteria)
+			.limit(parseInt(limit))
+			.skip(parseInt(skip))
+			.populate('tags', ["id", "name"])
+			.sort({ 'createdAt': -1 })
 		return res.status(200).json({
 			message: 'Get all article',
 			data: article,
@@ -92,6 +96,7 @@ export const getArticle = async (req, res) => {
 	const article = await Article.find({ user: req.user._id })
 		.populate('tags', ['_id', 'name'])
 		.populate('user', ['_id', 'username', 'firstname', 'lastname', 'email'])
+		.sort({ 'updatedAt': -1 })
 	return res.status(200).json(article)
 }
 
