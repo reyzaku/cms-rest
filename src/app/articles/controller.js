@@ -1,5 +1,5 @@
 import Tag from "../tags/Tag.js";
-import Article from "./articleModel.js";
+import Article from "./model.js";
 
 // Create a new Article
 export const createArticle = async (req, res, next) => {
@@ -113,6 +113,7 @@ export const getOneArticle = async (req, res) => {
 
 // Update article base on user login
 export const updateArticle = async (req, res, next) => {
+	if (!req.user) return res.status(401).json({ message: "Your are not logged in" })
 	try {
 		const { _id } = req.params
 		let payload = req.body
@@ -152,6 +153,7 @@ export const updateArticle = async (req, res, next) => {
 
 // Deleted article
 export const destroyArticle = async (req, res, next) => {
+	if (!req.user) return res.status(401).json({ message: "Your are not logged in" })
 	const { _id } = req.params
 	let article = await Article.findById(_id)
 	if (!article) return res.status(404).json({ message: 'Article Not Found' })

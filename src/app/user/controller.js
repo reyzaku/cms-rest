@@ -1,5 +1,5 @@
-import User from './userModel.js'
-import Profile from '../profile/profileModel.js'
+import User from './model.js'
+import Profile from '../profile/model.js'
 import fs from 'fs'
 
 export const getAllUser = async (req, res, next) => {

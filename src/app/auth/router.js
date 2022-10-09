@@ -1,7 +1,8 @@
 import express from 'express'
 import passport from 'passport'
 import loginStrategy from 'passport-local'
-import { localStrategy, loginUser, logoutUser, me, registerUser } from './authController.js'
+import { verifyUser } from '../../middleware/verifyUser.js'
+import { localStrategy, loginUser, logoutUser, me, registerUser } from './controller.js'
 const router = express.Router()
 loginStrategy.Strategy
 
@@ -10,7 +11,9 @@ router.post('/auth/register', registerUser)
 router.post('/auth/login',
 	loginUser,
 )
-router.get('/me', me)
+router.get('/me',
+	verifyUser,
+	me)
 router.delete('/auth/logout', logoutUser)
 
 
