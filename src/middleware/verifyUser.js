@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 
 export const verifyUser = async (req, res, next) => {
 	if (!req.session.token) {
-		return res.status(401).json({ msg: "Please login your account!" })
+		return res.status(401).json({ message: "Please login your account!" })
 	}
 	let user = await User.findOne({ token: { $in: [req.session.token] } })
 	try {
