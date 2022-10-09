@@ -1,8 +1,7 @@
-import Profile from './model.js'
+import Profile from './profileModel.js'
 import fs from 'fs'
 
 export const editProfile = async (req, res, next) => {
-	if(!req.user) return res.status(401).json({message: 'Please login your account!'})
 	try {
 		const payload = req.body
 		if (req.file) {

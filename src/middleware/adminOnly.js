@@ -1,4 +1,4 @@
-import User from "../app/user/model.js"
+import User from "../app/user/userModel.js"
 
 const adminOnly = async (req, res, next) => {
 	try {

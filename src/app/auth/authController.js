@@ -1,5 +1,5 @@
-import User from "../user/model.js";
-import Profile from '../profile/model.js'
+import User from "../user/userModel.js";
+import Profile from '../profile/profileModel.js'
 import passport from "passport";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -43,21 +43,22 @@ export const loginUser = async (req, res, next) => {
 		if (err) return next(err)
 		if (!user) return res.status(400).json({ error: 1, message: 'email or password incorect' })
 		let signed = jwt.sign(user, config.secretKey, {
-			expiresIn: '3h'
+			expiresIn: '3d'
 		})
 
 		await User.findByIdAndUpdate(user._id, { $push: { token: signed } })
-		req.session.token = signed
+		req.session.userId = user._id
 		res.json({
 			message: 'Login Successfully',
 			user,
+			token: signed
 		})
 	})(req, res, next)
 }
 
 export const logoutUser = async (req, res, next) => {
 	try {
-		const token = req.session.token
+		const token = getToken(req)
 		let user = await User.findOneAndUpdate({ token: { $in: [token] } }, { $pull: { token: token } }, { useFindAndModify: false })
 		if (!user) return res.status(400).json({ msg: 'User not found' })
 		req.session.destroy((err) => {
