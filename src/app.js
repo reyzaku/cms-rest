@@ -8,11 +8,10 @@ import { default as connectMongoDbSession } from 'connect-mongodb-session'
 import { fileURLToPath } from 'url';
 import cors from 'cors'
 import { config } from './app/config.js';
-import { decodeToken } from './middleware/decodeToken.js';
-import authRoute from './app/auth/authRoute.js'
-import profileRoute from './app/profile/profileRoute.js'
-import userRoute from './app/user/userRoute.js'
-import articleRoute from './app/articles/articleRoute.js'
+import authRoute from './app/auth/router.js'
+import profileRoute from './app/profile/router.js'
+import userRoute from './app/user/router.js'
+import articleRoute from './app/articles/router.js'
 import tagRoute from './app/tags/router.js'
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -37,13 +36,15 @@ app.use(session({
 	resave: false
 }))
 
-app.use(cors())
+app.use(cors({
+	origin: ["http://localhost:3000"],
+	credentials: true
+}))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
-app.use(decodeToken())
 
 app.use('/api/v1', authRoute)
 app.use('/api/v1', profileRoute)
