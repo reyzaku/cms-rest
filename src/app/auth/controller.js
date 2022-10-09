@@ -4,7 +4,6 @@ import passport from "passport";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { config } from "../config.js";
-import { getToken } from "../../utils/getToken.js";
 
 
 export const registerUser = async (req, res, next) => {
@@ -12,7 +11,7 @@ export const registerUser = async (req, res, next) => {
 		const payload = req.body
 		await User.create(payload)
 			.then(async (user) => {
-				res.status(200).json({ msg: 'Register User Success', data: user })
+				res.status(200).json({ message: 'Register User Success', data: user })
 				if (res.status(200)) {
 					await Profile.create({ user: user._id })
 				}
@@ -59,10 +58,10 @@ export const logoutUser = async (req, res, next) => {
 	try {
 		const token = req.session.token
 		let user = await User.findOneAndUpdate({ token: { $in: [token] } }, { $pull: { token: token } }, { useFindAndModify: false })
-		if (!user) return res.status(400).json({ msg: 'User not found' })
+		if (!user) return res.status(400).json({ message: 'User not found' })
 		req.session.destroy((err) => {
 			if (err) return next(err)
-			return res.status(200).json({ msg: 'Success Logout' })
+			return res.status(200).json({ message: 'Success Logout' })
 		})
 	} catch (err) {
 		if (err && err.name === 'ValidationError') {
@@ -80,7 +79,7 @@ export const me = async (req, res,) => {
 	if (!req.user) {
 		return res.status(401).json({
 			error: 2,
-			msg: "Please login your account"
+			message: "Please login your account"
 		})
 	}
 	res.status(200).json(req.user)
